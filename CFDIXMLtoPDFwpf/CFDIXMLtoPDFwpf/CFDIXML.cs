@@ -23,7 +23,7 @@ namespace CFDIXMLtoPDFwpf
         {
             Calle = xnDomicilio.Attributes.GetNamedItem("calle").Value;
             NoExterior = xnDomicilio.Attributes.GetNamedItem("noExterior").Value;
-            NoInterior = (xnDomicilio.Attributes.GetNamedItem("noInterior") != null)? xnDomicilio.Attributes.GetNamedItem("noInterior").Value:null;
+            NoInterior = xnDomicilio.Attributes.GetNamedItem("noInterior")?.Value;
             Colonia = xnDomicilio.Attributes.GetNamedItem("colonia").Value;
             Localidad = xnDomicilio.Attributes.GetNamedItem("localidad").Value;
             Municipio = xnDomicilio.Attributes.GetNamedItem("municipio").Value;
@@ -55,10 +55,11 @@ namespace CFDIXMLtoPDFwpf
             Rfc = xnPersona.Attributes.GetNamedItem("rfc").Value;
             Nombre = xnPersona.Attributes.GetNamedItem("nombre").Value;
             XmlNode xnDomicilio = xnPersona.SelectSingleNode("cfdi:Domicilio", nsmgr: nameSpaceManager);
-            if (xnDomicilio != null)
+            if (xnDomicilio == null)
             {
-                Domicilio = new Domicilio(xnDomicilio);
+                xnDomicilio = xnPersona.SelectSingleNode("cfdi:DomicilioFiscal", nsmgr: nameSpaceManager);
             }
+            Domicilio = new Domicilio(xnDomicilio);
             XmlNode xnRegimenFiscal = xnPersona.SelectSingleNode("cfdi:RegimenFiscal", nsmgr: nameSpaceManager);
             if(xnRegimenFiscal != null)
             {
@@ -119,12 +120,16 @@ namespace CFDIXMLtoPDFwpf
 
     class Impuestos
     {
-        private List<Traslado> traslados;
+        private List<Traslado> traslados= new List<Traslado>();
         private float totalImpuestosTrasladados;
 
         public Impuestos(XmlNode xnImpuestos, XmlNamespaceManager nameSpaceManager)
         {
-            totalImpuestosTrasladados = float.Parse(xnImpuestos.Attributes.GetNamedItem("totalImpuestosTrasladados").Value);
+            if (xnImpuestos.InnerXml.Length == 0)
+            {
+                return;
+            }
+            float.TryParse(xnImpuestos.Attributes.GetNamedItem("totalImpuestosTrasladados").Value, out totalImpuestosTrasladados);
             foreach (XmlNode xnTraslado in xnImpuestos.SelectNodes("//cfdi:Traslado", nameSpaceManager))
             {
                 traslados.Add(new Traslado(xnTraslado));
@@ -170,9 +175,9 @@ namespace CFDIXMLtoPDFwpf
         private List<Concepto> conceptos = new List<Concepto>();
         private TimbreFiscalDigital timbreFiscal;
         private Impuestos impuestos;
-        private string version { get; set; }
-        private string serie { get; set; }
-        private string folio { get; set; }
+        private string version;
+        private string serie;
+        private string folio;
         private string fecha;
         private string sello;
         private string formaDePago;
@@ -229,14 +234,14 @@ namespace CFDIXMLtoPDFwpf
             XmlNode xnComprobante = xmlDoc.SelectSingleNode("//cfdi:Comprobante", nameSpaceManager);
             if(xnComprobante == null) { return null; }
             Version = xnComprobante.Attributes.GetNamedItem("version").Value;
-            Serie = xnComprobante.Attributes.GetNamedItem("serie").Value;
+            Serie = xnComprobante.Attributes.GetNamedItem("serie")?.Value;
             Folio = xnComprobante.Attributes.GetNamedItem("folio").Value;
             Fecha = xnComprobante.Attributes.GetNamedItem("fecha").Value;
             Sello = xnComprobante.Attributes.GetNamedItem("sello").Value;
             FormaDePago = xnComprobante.Attributes.GetNamedItem("formaDePago").Value;
             NoCertificado = xnComprobante.Attributes.GetNamedItem("noCertificado").Value;
             Certificado = xnComprobante.Attributes.GetNamedItem("certificado").Value;
-            CondicionesDePago = xnComprobante.Attributes.GetNamedItem("condicionesDePago").Value;
+            CondicionesDePago = xnComprobante.Attributes.GetNamedItem("condicionesDePago")?.Value;
             float.TryParse(xnComprobante.Attributes.GetNamedItem("subTotal").Value, out subTotal);
             float.TryParse(xnComprobante.Attributes.GetNamedItem("TipoCambio").Value, out tipoCambio);
             Moneda = xnComprobante.Attributes.GetNamedItem("Moneda").Value;
@@ -244,7 +249,7 @@ namespace CFDIXMLtoPDFwpf
             TipoDeComprobante = xnComprobante.Attributes.GetNamedItem("tipoDeComprobante").Value;
             MetodoDePago = xnComprobante.Attributes.GetNamedItem("metodoDePago").Value;
             LugarExpedicion = xnComprobante.Attributes.GetNamedItem("LugarExpedicion").Value;
-            NumCtaPago = xnComprobante.Attributes.GetNamedItem("NumCtaPago").Value;
+            NumCtaPago = xnComprobante.Attributes.GetNamedItem("NumCtaPago")?.Value;
 
             Emisor = new Persona(xmlDoc.SelectSingleNode("//cfdi:Emisor", nameSpaceManager), nameSpaceManager);
             Receptor = new Persona(xmlDoc.SelectSingleNode("//cfdi:Receptor", nameSpaceManager), nameSpaceManager);

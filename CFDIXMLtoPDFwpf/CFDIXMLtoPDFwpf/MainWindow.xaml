@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CFDIXMLtoPDFwpf"
         mc:Ignorable="d"
         Title="CDFItoPDF
-        " Height="559.072" Width="859.052">
+        " Height="559.072" Width="859.052" FontSize="16">
     <Window.Effect>
         <DropShadowEffect/>
     </Window.Effect>
@@ -24,26 +24,33 @@
             <ColumnDefinition Width="327*"/>
             <ColumnDefinition Width="377*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Left" Margin="10,18,0,0" TextWrapping="Wrap" Text="List of files to convert" Height="21" Width="141" VerticalAlignment="Top"/>
-        <ListBox x:Name="lbx_files" Margin="10,39,24,10" AllowDrop="True" DragOver="Lbx_files_DragOver" Drop="Lbx_files_Drop" Background="#FFFFF6F6" SelectionMode="Multiple" AutomationProperties.IsRequiredForForm="True">
-            <ListBox.Effect>
-                <DropShadowEffect/>
-            </ListBox.Effect>
-        </ListBox>
-        <Button x:Name="btnConvert" Content="Convert" HorizontalAlignment="Left" Margin="118,54,0,0" VerticalAlignment="Top" Width="75" Height="22" Grid.Row="1" Click="BtnConvert_Click" Opacity="0"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,18,0,0" TextWrapping="Wrap" Text="List of files to convert" Height="21" Width="183" VerticalAlignment="Top" FontSize="16"/>
+        <Button x:Name="btnConvert" Margin="185,40,185,0" VerticalAlignment="Top" Height="61" Grid.Row="1" Click="BtnConvert_Click" Opacity="0.2" Grid.Column="1">
+            <StackPanel>
+                <Image Height="32" Width="32" Source="resources/wizard.png" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <TextBlock Text="Convert"/>
+            </StackPanel>
+        </Button>
         <DocumentViewer x:Name="docviewer" Grid.Column="1" Margin="10,10,10,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Left" Height="22" Margin="10,26,0,0" VerticalAlignment="Top" Width="336" Grid.Column="1" Grid.Row="1" Opacity="0"/>
-        <TextBox x:Name="txt_target" HorizontalAlignment="Left" Height="23" Margin="26,26,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="197" MaxLines="1" Grid.Row="1"/>
-        <Button x:Name="btn_browse" HorizontalAlignment="Left" Margin="234,10,0,0" VerticalAlignment="Top" Width="90" Click="Btn_browse_Click" Height="62" Grid.Row="1">
+        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Center" Height="22" Margin="10,10,10,0" VerticalAlignment="Top" Width="436" Grid.Column="1" Grid.Row="1" Opacity="0.2" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="txt_target" HorizontalAlignment="Left" Height="28" Margin="10,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261" MaxLines="1" Grid.Row="1" TextChanged="Txt_target_TextChanged" Text="d:\Temp"/>
+        <Button x:Name="btn_browse" HorizontalAlignment="Left" Margin="276,25,0,24" Width="109" Click="Btn_browse_Click" Grid.Row="1">
             <StackPanel>
                 <Image Height="32" Width="32" Source="resources/search_lense.png" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <TextBlock Text="Target Folder"/>
             </StackPanel>
         </Button>
-        <Label Content="Output folder:" HorizontalAlignment="Left" Margin="26,0,0,0" VerticalAlignment="Top" Width="203" Height="26" Grid.Row="1"/>
-        <Button x:Name="btnAdd" Background="{StaticResource AddButtonImageBrush}" HorizontalAlignment="Left" Margin="293,14,0,0" VerticalAlignment="Top" Width="25" Height="25" IsDefault="True" Click="btnAdd_Click"/>
-        <Button x:Name="btnRemove" Background="{StaticResource RemoveButtonImageBrush}" HorizontalAlignment="Left" Margin="318,14,0,0" VerticalAlignment="Top" Width="25" Height="25" Click="btnRemove_Click"/>
-        <Button x:Name="btnClean" Background="{StaticResource ClearButtonImageBrush}" HorizontalAlignment="Left" Margin="344,14,0,0" VerticalAlignment="Top" Width="25" Height="25" Click="btnClean_Click"/>
+        <Grid Margin="293,15,12,373">
+            <Button x:Name="btnAdd" Background="{StaticResource AddButtonImageBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Height="30" IsDefault="True" Click="BtnAdd_Click"/>
+            <Button x:Name="btnRemove" Background="{StaticResource RemoveButtonImageBrush}" HorizontalAlignment="Left" Margin="30,0,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="BtnRemove_Click"/>
+            <Button x:Name="btnClean" Background="{StaticResource ClearButtonImageBrush}" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="BtnClean_Click"/>
+        </Grid>
+        <Label Content="Output folder:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="203" Height="35" Grid.Row="1"/>
+        <ListBox x:Name="lbx_files" Margin="10,39,10,10" AllowDrop="True" DragOver="Lbx_files_DragOver" Drop="Lbx_files_Drop" Background="#FFFFF6F6" SelectionMode="Multiple" AutomationProperties.IsRequiredForForm="True">
+            <ListBox.Effect>
+                <DropShadowEffect/>
+            </ListBox.Effect>
+        </ListBox>
 
     </Grid>
 </Window>

@@ -33,12 +33,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>CFDIXMLtoPDFwpf.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>resources\aap-icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Spire.License">
-      <HintPath>C:\Program Files (x86)\e-iceblue\Spire.Pdf\Bin\WPF4.0\Spire.License.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\e-iceblue\Spire.pdf-fe\Bin\NET4.0\Spire.License.dll</HintPath>
     </Reference>
-    <Reference Include="Spire.Pdf.Wpf">
-      <HintPath>C:\Program Files (x86)\e-iceblue\Spire.Pdf\Bin\WPF4.0\Spire.Pdf.Wpf.dll</HintPath>
+    <Reference Include="Spire.Pdf">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\e-iceblue\Spire.pdf-fe\Bin\NET4.0\Spire.Pdf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -92,6 +98,7 @@
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
@@ -105,12 +112,13 @@
   <ItemGroup>
     <Resource Include="resources\document_file.png" />
     <Resource Include="resources\eraser.png" />
-    <Resource Include="resources\folder.png" />
     <Resource Include="resources\minus.png" />
     <Resource Include="resources\plus.png" />
-    <Resource Include="resources\save_diskette_floppy_disk.png" />
     <Resource Include="resources\search_lense.png" />
     <Resource Include="resources\wizard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\aap-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
