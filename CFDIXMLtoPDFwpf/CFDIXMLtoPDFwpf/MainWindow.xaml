@@ -1,0 +1,49 @@
+﻿<Window x:Name="CDFItoPDF" x:Class="CFDIXMLtoPDFwpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CFDIXMLtoPDFwpf"
+        mc:Ignorable="d"
+        Title="CDFItoPDF
+        " Height="559.072" Width="859.052">
+    <Window.Effect>
+        <DropShadowEffect/>
+    </Window.Effect>
+    <Grid>
+        <Grid.Resources>
+            <ImageBrush x:Key="AddButtonImageBrush" ImageSource="resources/plus.png" Stretch="UniformToFill"/>
+            <ImageBrush x:Key="RemoveButtonImageBrush" ImageSource="resources/minus.png" Stretch="UniformToFill"/>
+            <ImageBrush x:Key="ClearButtonImageBrush" ImageSource="resources/eraser.png" Stretch="UniformToFill"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="352*"/>
+            <RowDefinition Height="93*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="327*"/>
+            <ColumnDefinition Width="377*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock HorizontalAlignment="Left" Margin="10,18,0,0" TextWrapping="Wrap" Text="List of files to convert" Height="21" Width="141" VerticalAlignment="Top"/>
+        <ListBox x:Name="lbx_files" Margin="10,39,24,10" AllowDrop="True" DragOver="Lbx_files_DragOver" Drop="Lbx_files_Drop" Background="#FFFFF6F6" SelectionMode="Multiple" AutomationProperties.IsRequiredForForm="True">
+            <ListBox.Effect>
+                <DropShadowEffect/>
+            </ListBox.Effect>
+        </ListBox>
+        <Button x:Name="btnConvert" Content="Convert" HorizontalAlignment="Left" Margin="118,54,0,0" VerticalAlignment="Top" Width="75" Height="22" Grid.Row="1" Click="BtnConvert_Click" Opacity="0"/>
+        <DocumentViewer x:Name="docviewer" Grid.Column="1" Margin="10,10,10,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Left" Height="22" Margin="10,26,0,0" VerticalAlignment="Top" Width="336" Grid.Column="1" Grid.Row="1" Opacity="0"/>
+        <TextBox x:Name="txt_target" HorizontalAlignment="Left" Height="23" Margin="26,26,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="197" MaxLines="1" Grid.Row="1"/>
+        <Button x:Name="btn_browse" HorizontalAlignment="Left" Margin="234,10,0,0" VerticalAlignment="Top" Width="90" Click="Btn_browse_Click" Height="62" Grid.Row="1">
+            <StackPanel>
+                <Image Height="32" Width="32" Source="resources/search_lense.png" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <TextBlock Text="Target Folder"/>
+            </StackPanel>
+        </Button>
+        <Label Content="Output folder:" HorizontalAlignment="Left" Margin="26,0,0,0" VerticalAlignment="Top" Width="203" Height="26" Grid.Row="1"/>
+        <Button x:Name="btnAdd" Background="{StaticResource AddButtonImageBrush}" HorizontalAlignment="Left" Margin="293,14,0,0" VerticalAlignment="Top" Width="25" Height="25" IsDefault="True" Click="btnAdd_Click"/>
+        <Button x:Name="btnRemove" Background="{StaticResource RemoveButtonImageBrush}" HorizontalAlignment="Left" Margin="318,14,0,0" VerticalAlignment="Top" Width="25" Height="25" Click="btnRemove_Click"/>
+        <Button x:Name="btnClean" Background="{StaticResource ClearButtonImageBrush}" HorizontalAlignment="Left" Margin="344,14,0,0" VerticalAlignment="Top" Width="25" Height="25" Click="btnClean_Click"/>
+
+    </Grid>
+</Window>
