@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CFDIXMLtoPDFwpf"
         mc:Ignorable="d"
-        Title="CDFItoPDF
-        " Height="559.072" Width="859.052" FontSize="16">
+        Title="CDFItoPDF v1.0
+        " Height="559.072" Width="859.052" FontSize="16" Icon="resources/aap-icon.ico" WindowStartupLocation="CenterScreen" Background="#FFF0F0F0">
     <Window.Effect>
         <DropShadowEffect/>
     </Window.Effect>
@@ -25,8 +25,8 @@
             <ColumnDefinition Width="426*"/>
         </Grid.ColumnDefinitions>
         <TextBlock HorizontalAlignment="Left" Margin="10,18,0,0" TextWrapping="Wrap" Text="XML Files" Height="21" Width="183" VerticalAlignment="Top" FontSize="16"/>
-        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Center" Height="28" Margin="10,45,10,0" VerticalAlignment="Top" Width="402" Grid.Row="1" Opacity="0.2" HorizontalContentAlignment="Center" Grid.Column="1"/>
-        <TextBox x:Name="txt_target" HorizontalAlignment="Left" Height="28" Margin="10,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" MaxLines="1" Grid.Row="1" TextChanged="Txt_target_TextChanged" Text="d:\Temp"/>
+        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Center" Height="28" Margin="10,45,10,0" VerticalAlignment="Top" Width="402" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="1" BorderThickness="0" Visibility="Hidden"/>
+        <TextBox x:Name="txt_target" HorizontalAlignment="Left" Height="28" Margin="10,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" MaxLines="1" Grid.Row="1" TextChanged="Txt_target_TextChanged" />
 
         <Image x:Name="imgBrowse" Source="resources/search_lense.png" Margin="356,45,13,34" Grid.Row="1" MouseLeftButtonUp="ImgBrowse_MouseLeftButtonUp" >
             <Image.Style>
@@ -92,11 +92,33 @@
         </Grid>
         <Label Content="Output folder:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="203" Height="35" Grid.Row="1"/>
         <ListBox x:Name="lbxXMLFiles" Margin="10,39,10,10" AllowDrop="True" DragOver="LbxXMLFiles_DragOver" Drop="LbxXMLFiles_Drop" Background="#FFFFF6F6" SelectionMode="Multiple" AutomationProperties.IsRequiredForForm="True">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="2" Width="48" Height="48" Source="resources/document_xml.png"/>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Margin="2" Text="{Binding File}"/>
+                            <TextBlock Margin="2" Text="{Binding FilePath}" FontSize="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
             <ListBox.Effect>
                 <DropShadowEffect/>
             </ListBox.Effect>
         </ListBox>
         <ListBox x:Name="lbxPDFFiles" Grid.Column="1" HorizontalAlignment="Left" Height="369" Margin="10,39,0,0" VerticalAlignment="Top" Width="402" Background="#FFFFF6F6" Opacity="0.2" MouseDoubleClick="LbxPDFFiles_MouseDoubleClick">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="2" Width="48" Height="48" Source="resources/document_file.png"/>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Margin="2" Text="{Binding File}"/>
+                            <TextBlock Margin="2" Text="{Binding FilePath}" FontSize="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
             <ListBox.Effect>
                 <DropShadowEffect/>
             </ListBox.Effect>
