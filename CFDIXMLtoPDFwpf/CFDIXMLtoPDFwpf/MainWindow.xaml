@@ -21,35 +21,28 @@
             <RowDefinition Height="93*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="327*"/>
-            <ColumnDefinition Width="377*"/>
+            <ColumnDefinition Width="426*"/>
+            <ColumnDefinition Width="426*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Left" Margin="10,18,0,0" TextWrapping="Wrap" Text="List of files to convert" Height="21" Width="183" VerticalAlignment="Top" FontSize="16"/>
-        <Button x:Name="btnConvert" Margin="185,40,185,0" VerticalAlignment="Top" Height="61" Grid.Row="1" Click="BtnConvert_Click" Opacity="0.2" Grid.Column="1">
-            <StackPanel>
-                <Image Height="32" Width="32" Source="resources/wizard.png" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <TextBlock Text="Convert"/>
-            </StackPanel>
-        </Button>
-        <DocumentViewer x:Name="docviewer" Grid.Column="1" Margin="10,10,10,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Center" Height="22" Margin="10,10,10,0" VerticalAlignment="Top" Width="436" Grid.Column="1" Grid.Row="1" Opacity="0.2" HorizontalContentAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,18,0,0" TextWrapping="Wrap" Text="XML Files" Height="21" Width="183" VerticalAlignment="Top" FontSize="16"/>
+        <ProgressBar x:Name="pgb_Progress" HorizontalAlignment="Center" Height="28" Margin="10,45,10,0" VerticalAlignment="Top" Width="402" Grid.Row="1" Opacity="0.2" HorizontalContentAlignment="Center" Grid.Column="1"/>
         <TextBox x:Name="txt_target" HorizontalAlignment="Left" Height="28" Margin="10,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" MaxLines="1" Grid.Row="1" TextChanged="Txt_target_TextChanged" Text="d:\Temp"/>
-        
-            <Image x:Name="imgBrowse" Height="32" Width="32" Source="resources/search_lense.png" Margin="353,45,10,34" Grid.Row="1" MouseLeftButtonUp="ImgBrowse_MouseLeftButtonUp" >
-                <Image.Style>
-                    <Style TargetType="{x:Type Image}">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect ShadowDepth="0" Color="Blue" Opacity="0.5" BlurRadius="5"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Image.Style>
-            </Image>
+
+        <Image x:Name="imgBrowse" Source="resources/search_lense.png" Margin="356,45,13,34" Grid.Row="1" MouseLeftButtonUp="ImgBrowse_MouseLeftButtonUp" >
+            <Image.Style>
+                <Style TargetType="{x:Type Image}">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="0" Color="Blue" Opacity="0.5" BlurRadius="5"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
         <Grid Margin="293,15,12,373">
             <Image x:Name="imgAdd" Source="resources/plus.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Height="30" MouseLeftButtonUp="ImgAdd_MouseLeftButtonUp" >
                 <Image.Style>
@@ -98,11 +91,23 @@
             </Image>
         </Grid>
         <Label Content="Output folder:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="203" Height="35" Grid.Row="1"/>
-        <ListBox x:Name="lbx_files" Margin="10,39,10,10" AllowDrop="True" DragOver="Lbx_files_DragOver" Drop="Lbx_files_Drop" Background="#FFFFF6F6" SelectionMode="Multiple" AutomationProperties.IsRequiredForForm="True">
+        <ListBox x:Name="lbxXMLFiles" Margin="10,39,10,10" AllowDrop="True" DragOver="LbxXMLFiles_DragOver" Drop="LbxXMLFiles_Drop" Background="#FFFFF6F6" SelectionMode="Multiple" AutomationProperties.IsRequiredForForm="True">
             <ListBox.Effect>
                 <DropShadowEffect/>
             </ListBox.Effect>
         </ListBox>
+        <ListBox x:Name="lbxPDFFiles" Grid.Column="1" HorizontalAlignment="Left" Height="369" Margin="10,39,0,0" VerticalAlignment="Top" Width="402" Background="#FFFFF6F6" Opacity="0.2" MouseDoubleClick="LbxPDFFiles_MouseDoubleClick">
+            <ListBox.Effect>
+                <DropShadowEffect/>
+            </ListBox.Effect>
+        </ListBox>
+        <Label Content="PDF Files" Grid.Column="1" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnConvert" Margin="387,188,379,0" VerticalAlignment="Top" Height="61" Click="BtnConvert_Click" Opacity="0.2" Grid.ColumnSpan="2">
+            <StackPanel>
+                <Image Height="32" Width="32" Source="resources/wizard.png" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <TextBlock Text="Convert"/>
+            </StackPanel>
+        </Button>
 
     </Grid>
 </Window>

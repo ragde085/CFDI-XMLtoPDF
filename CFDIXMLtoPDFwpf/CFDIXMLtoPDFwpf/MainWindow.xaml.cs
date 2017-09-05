@@ -20,6 +20,8 @@ using Spire.Pdf;
 using Spire.Pdf.Graphics;
 using System.Drawing;
 using System.Windows.Media.Animation;
+using Spire.Pdf.Tables;
+using QRCoder;
 
 namespace CFDIXMLtoPDFwpf
 {
@@ -42,13 +44,14 @@ namespace CFDIXMLtoPDFwpf
     /// </summary>
     public partial class MainWindow : Window
     {
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
 
-        private void Lbx_files_DragOver(object sender, System.Windows.DragEventArgs e)
+        private void LbxXMLFiles_DragOver(object sender, System.Windows.DragEventArgs e)
         {
             bool dropEnabled = true;
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop, true))
@@ -78,14 +81,14 @@ namespace CFDIXMLtoPDFwpf
         }
 
 
-        private void Lbx_files_Drop(object sender, System.Windows.DragEventArgs e)
+        private void LbxXMLFiles_Drop(object sender, System.Windows.DragEventArgs e)
         {
             string[] droppedFilenames =
                                 e.Data.GetData(System.Windows.DataFormats.FileDrop, true) as string[];
             
             foreach (string filename in droppedFilenames)
             {
-                lbx_files.Items.Add(filename);
+                lbxXMLFiles.Items.Add(filename);
                 Debug.WriteLine(filename);
             }
 
@@ -94,27 +97,34 @@ namespace CFDIXMLtoPDFwpf
 
         private void EnableConvert()
         {
-            if (txt_target.Text.Length > 0 && lbx_files?.Items.Count > 0)
+            if (txt_target.Text.Length > 0 && lbxXMLFiles?.Items.Count > 0)
             {
                 DoubleAnimation animation = new DoubleAnimation(1, TimeSpan.FromSeconds(1));
                 btnConvert.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
             }
-            else if (txt_target.Text.Length == 0 || lbx_files?.Items.Count == 0)
+            else if (txt_target.Text.Length == 0 || lbxXMLFiles?.Items.Count == 0)
             {
-                DoubleAnimation animation = new DoubleAnimation(0.2, TimeSpan.FromSeconds(2));
+                DoubleAnimation animation = new DoubleAnimation(0.2, TimeSpan.FromSeconds(1));
                 btnConvert.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
+                lbxPDFFiles.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
             }
         }
 
         private void BtnConvert_Click(object sender, RoutedEventArgs e)
         {
-            lbx_files.IsEnabled = false;
-            DoubleAnimation animation = new DoubleAnimation(1, TimeSpan.FromSeconds(2));
+            lbxXMLFiles.IsEnabled = false;
+            lbxPDFFiles.Items.Clear();
+            DoubleAnimation animation = new DoubleAnimation(1, TimeSpan.FromSeconds(1));
             pgb_Progress.BeginAnimation(System.Windows.Controls.ProgressBar.OpacityProperty, animation);
-            pgb_Progress.Maximum = lbx_files.Items.Count;
-            foreach (string file in lbx_files.Items)
+            lbxPDFFiles.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
+            pgb_Progress.Maximum = lbxXMLFiles.Items.Count;
+            foreach (string file in lbxXMLFiles.Items)
             {
-                CreatePDFFromCFDI(txt_target.Text, GetFileName(file), new CFDIXML(file).LoadFile());
+                string pdfFile= CreatePDFFromCFDI(txt_target.Text, GetFileName(file), new CFDIXML(file).LoadFile());
+                if(pdfFile != null)
+                {
+                    lbxPDFFiles.Items.Add(pdfFile);
+                }
                 pgb_Progress.Value = pgb_Progress.Value+1;
             }
 
@@ -122,7 +132,7 @@ namespace CFDIXMLtoPDFwpf
             pgb_Progress.BeginAnimation(System.Windows.Controls.ProgressBar.OpacityProperty, animation);
             pgb_Progress.Maximum = 0;
             pgb_Progress.Value = 0;
-            lbx_files.IsEnabled = true;
+            lbxXMLFiles.IsEnabled = true;
         }
 
         private string GetFileName(string file)
@@ -133,7 +143,7 @@ namespace CFDIXMLtoPDFwpf
             return file.Substring(startIndex+1, length);
         }
 
-        private void CreatePDFFromCFDI(string outputFolder, string fileName, CFDIXML cfdi)
+        private string CreatePDFFromCFDI(string outputFolder, string fileName, CFDIXML cfdi)
         {
             PdfDocument document = new PdfDocument();
             PdfPageBase page = document.Pages.Add();
@@ -153,44 +163,28 @@ namespace CFDIXMLtoPDFwpf
             document.DocumentInformation.Title = title;
             document.DocumentInformation.Author = cfdi.Emisor.Nombre;
 
-
-            ////save graphics state
-            //PdfGraphicsState state = page.Canvas.Save();
-            ////Draw text - brush
-            //string text = "Text,turn Around! Go! Go! Go!";
-            //PdfPen pen = PdfPens.DeepSkyBlue;
-            //PdfSolidBrush brush = new PdfSolidBrush(System.Drawing.Color.Blue);
-            //PdfStringFormat format = new PdfStringFormat();
-            //PdfFont font = new PdfFont(PdfFontFamily.Helvetica, 18f, PdfFontStyle.Italic);
-            //SizeF size = font.MeasureString(text, format);
-            ////RectangleF rctg
-            ////    = new RectangleF(page.Canvas.ClientSize.Width / 2 + 10, 180,
-            ////    size.Width / 3 * 2, size.Height * 3);
-            ////page.Canvas.DrawString(text, font, pen, brush, rctg, format);
-
-            ////restore graphics
-            //page.Canvas.Restore(state);
-
             string outputFile = outputFolder + "\\" + fileName + ".pdf";
             try {
                 document.SaveToFile(outputFile);
+                document.Close();
             }catch (Exception e)
             {
                 System.Windows.MessageBox.Show(e.Message);
+                return null;
             }
-            document.Close();
 
-            System.Diagnostics.Process.Start(outputFile);
+            return outputFile;
         }
 
         private static void DrawPage(PdfPageBase page, CFDIXML cfdi)
         {
             float pageWidth = page.Canvas.ClientSize.Width;
             float y = 0;
-            float leftMargin = 10;
+            float leftMargin = 5;
             float midPage = pageWidth / 2;
             float topWritingArea = 0;
             int sectionSpacing = 15;
+            float qrSize = 100;
 
             //Fonts
             string fontName = "Arial Condensed";
@@ -198,9 +192,13 @@ namespace CFDIXMLtoPDFwpf
             PdfTrueTypeFont font7 = new PdfTrueTypeFont(new Font(fontName, 7f, System.Drawing.FontStyle.Regular));
             PdfTrueTypeFont font6Italic = new PdfTrueTypeFont(new Font(fontName, 6f, System.Drawing.FontStyle.Italic));
 
+            //Colors
+            PdfRGBColor lightBlack = new PdfRGBColor(17, 17, 17);
+
             //Pen
             PdfPen penLightGray1p = new PdfPen(System.Drawing.Color.LightGray, 1f);
-            PdfPen penBlack10p = new PdfPen(System.Drawing.Color.Black, 10f);
+            PdfPen penLightGray05p = new PdfPen(System.Drawing.Color.LightGray, 0.5f);
+            PdfPen penLightBlack10p = new PdfPen(lightBlack, 10f);
 
             //Brushes
             PdfBrush brushBlack = new PdfSolidBrush(System.Drawing.Color.Black);
@@ -208,6 +206,7 @@ namespace CFDIXMLtoPDFwpf
 
             //Format Alignments
             PdfStringFormat formatRight = new PdfStringFormat(PdfTextAlignment.Right);
+            PdfStringFormat formatMiddle = new PdfStringFormat(PdfTextAlignment.Center, PdfVerticalAlignment.Middle);
             PdfStringFormat formatLeft = new PdfStringFormat(PdfTextAlignment.Left)
             {
                 CharacterSpacing = 0.4f
@@ -225,87 +224,205 @@ namespace CFDIXMLtoPDFwpf
 
             //Issuerinfo
             //Name
-            DrawToPage(page, cfdi.Emisor.Nombre, font7Bold, brushBlack, leftMargin, y, out y, formatLeft);
+            DrawToPage(page, cfdi.Emisor.Nombre, font7Bold, brushBlack, formatLeft, leftMargin, y, out y);
             //RFC
-            DrawToPage(page, cfdi.Emisor.Rfc, font7Bold, brushBlack, leftMargin, y, out y, formatLeft);
+            DrawToPage(page, cfdi.Emisor.Rfc, font7Bold, brushBlack, formatLeft, leftMargin, y, out y);
             //Fiscal Regime
-            DrawToPage(page, cfdi.Emisor.RegimenFiscal, font7, brushBlack, leftMargin, y, out y, formatLeft);
+            DrawToPage(page, cfdi.Emisor.RegimenFiscal, font7, brushBlack, formatLeft, leftMargin, y, out y);
             //Address
             text = "Calle:" + cfdi.Emisor.Domicilio.Calle + " No:" + cfdi.Emisor.Domicilio.NoExterior;
-            if(cfdi.Emisor.Domicilio.NoInterior != null)
+            if (cfdi.Emisor.Domicilio.NoInterior != null)
             {
                 text += "-" + cfdi.Emisor.Domicilio.NoInterior;
             }
-            text += " Col:" + cfdi.Emisor.Domicilio.Colonia;
-            DrawToPage(page, text , font7, brushBlack, leftMargin, y, out y, formatLeft);
-            text = "Localidad:" + cfdi.Emisor.Domicilio.Localidad + ", Municipio:" + cfdi.Emisor.Domicilio.Municipio + ", Estado:" + cfdi.Emisor.Domicilio.Estado + ", CP:" + cfdi.Emisor.Domicilio.Cp;
-            DrawToPage(page, text, font7, brushBlack, leftMargin, y, out y, formatLeft);
-            DrawToPage(page, "Pais:" + cfdi.Emisor.Domicilio.Pais, font7, brushBlack, leftMargin, y, out y, formatLeft);
-
-            //Issue place
-            y += 5;
-            DrawToPageWithHeader(page, "Lugar de expedición:", cfdi.LugarExpedicion, font7Bold, font7, brushBlack, formatLeft, leftMargin, y, out y);
+            text += " Col:" + cfdi.Emisor.Domicilio.Colonia + ", Localidad:" + cfdi.Emisor.Domicilio.Localidad + ", Municipio:" + cfdi.Emisor.Domicilio.Municipio + ", Estado:" + cfdi.Emisor.Domicilio.Estado + ", CP:" + cfdi.Emisor.Domicilio.Cp;
+            RectangleF area = new RectangleF(leftMargin, y, midPage - 10, 30);
+            DrawToPage(page, text, font7, brushBlack, formatLeft, area, y, out y, false);
+            DrawToPage(page, "Pais:" + cfdi.Emisor.Domicilio.Pais, font7, brushBlack, formatLeft, leftMargin, y, out y);
 
             //Invoice data
             y = topWritingArea;
             //Invoice header
             y += 5;
-            page.Canvas.DrawLine(penBlack10p, midPage, y, pageWidth, y);
+            page.Canvas.DrawLine(penLightBlack10p, midPage, y, pageWidth, y);
             text = "Factura";
             size = font7Bold.MeasureString(text, formatLeft);
             y -= 4;
-            DrawToPage(page, text, font7Bold, brushLightGray, pageWidth-size.Width -10, y, out y, formatLeft);
+            DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, pageWidth - size.Width - 10, y, out y);
             //Invoice number
             DrawToPageWithHeader(page, "Folio:", cfdi.Folio, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
-            DrawToPageWithHeader(page, "Serie:", cfdi.Serie, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
+            DrawToPageWithHeader(page, "Serie:", cfdi.Serie ?? "", font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
             DrawToPageWithHeader(page, "Folio Fiscal:", cfdi.TimbreFiscal.UUID, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
             DrawToPageWithHeader(page, "Serie CSD del SAT:", cfdi.TimbreFiscal.NoCertificadoSAT, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
             DrawToPageWithHeader(page, "No. Certificado:", cfdi.NoCertificado, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
             DrawToPageWithHeader(page, "Fecha emsión:", cfdi.Fecha, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
             DrawToPageWithHeader(page, "Fecha certificación:", cfdi.TimbreFiscal.FechaTimbrado, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
 
+            //Issue place
+            y += 5;
+            DrawToPageWithHeader(page, "Lugar de expedición:", cfdi.LugarExpedicion, font7Bold, font7, brushBlack, formatLeft, leftMargin, y, out y);
+
             //Reciever data
             //Reciever header
             y += sectionSpacing;
-            page.Canvas.DrawLine(penBlack10p, leftMargin, y, pageWidth, y);
+            page.Canvas.DrawLine(penLightBlack10p, leftMargin, y, pageWidth, y);
             text = "Receptor";
             size = font7Bold.MeasureString(text, formatLeft);
             y -= 4;
-            DrawToPage(page, text, font7Bold, brushLightGray, midPage - (size.Width/2), y, out y, formatLeft);
+            DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, midPage - (size.Width / 2), y, out y);
             //Reciever name
-            DrawToPageWithHeader(page, "Receptor:", cfdi.Receptor.Nombre, font7Bold, font7, brushBlack, formatLeft, leftMargin, y, out y);
+            DrawToPageWithHeader(page, "Receptor:  ", cfdi.Receptor.Nombre, font7Bold, font7, brushBlack, formatLeft, leftMargin, y, out y, true);
             //Reciever address
-            text = "Calle:" + cfdi.Receptor.Domicilio.Calle + " No:" + cfdi.Receptor.Domicilio.NoExterior;
+            text = "Calle:  " + cfdi.Receptor.Domicilio.Calle + " No:" + cfdi.Receptor.Domicilio.NoExterior;
             if (cfdi.Receptor.Domicilio.NoInterior != null)
             {
                 text += "-" + cfdi.Receptor.Domicilio.NoInterior;
             }
-            text += " Col:" + cfdi.Receptor.Domicilio.Colonia;
-            DrawToPageWithHeader(page, "Domicilio", text, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y, true);
+            DrawToPageWithHeader(page, "Domicilio:   ", text, font7Bold, font7, brushBlack, formatLeft, midPage, y, out y);
             //RFC
-            DrawToPageWithHeader(page, "R.F.C.:", cfdi.Receptor.Rfc, font7Bold, font7, brushBlack, formatLeft, leftMargin, y, out y);
+            DrawToPageWithHeader(page, "R.F.C.:", cfdi.Receptor.Rfc, font7Bold, font7, brushBlack, formatLeft, leftMargin, y, out y, true);
             //Next line address
-            text = "Localidad:" + cfdi.Receptor.Domicilio.Localidad + ", Municipio:" + cfdi.Receptor.Domicilio.Municipio + ", Estado:" + cfdi.Receptor.Domicilio.Estado + ", CP:" + cfdi.Receptor.Domicilio.Cp;
-            DrawToPage(page, text, font7, brushBlack, midPage, y, out y, formatLeft);
-            DrawToPage(page, "Pais:" + cfdi.Receptor.Domicilio.Pais, font7, brushBlack, midPage, y, out y, formatLeft);
+            text = " Col:" + cfdi.Receptor.Domicilio.Colonia + ", Localidad:" + cfdi.Receptor.Domicilio.Localidad + ", Municipio:" + cfdi.Receptor.Domicilio.Municipio;
+            area = new RectangleF(midPage, y, midPage - 10, 20);
+            DrawToPage(page, text, font7, brushBlack, formatLeft, area, y, out y, false);
+            text = " Estado:" + cfdi.Receptor.Domicilio.Estado + ", CP:" + cfdi.Receptor.Domicilio.Cp;
+            DrawToPage(page, text, font7, brushBlack, formatLeft, midPage, y, out y);
+            DrawToPage(page, "Pais:" + cfdi.Receptor.Domicilio.Pais, font7, brushBlack, formatLeft, midPage, y, out y);
 
             //Products
             y += sectionSpacing;
 
+            //Prepare data
+            String[][] dataSource = new String[cfdi.Conceptos.Count + 1][];
+            String headers = "Cant.;Unidad;Clave;Descripción;Valor unitario;Importe";
+            int i = 0;
+            dataSource[i] = headers.Split(';');
+            foreach (Concepto product in cfdi.Conceptos)
+            {
+                i++;
+                String[] content = new String[6];
+                content[0] = product.Cantidad.ToString();
+                content[1] = product.Unidad;
+                content[2] = product.NoIdentificacion;
+                content[3] = product.Descripcion;
+                content[4] = String.Format("{0:N1}", product.ValorUnitario);
+                content[5] = String.Format("{0:C2}", product.Importe);
+                dataSource[i] = content;
+            }
+
+            //Generate table
+            PdfTable productsTable = new PdfTable();
+            PdfTableStyle style = new PdfTableStyle()
+            {
+                BorderPen = new PdfPen(lightBlack, 0.5f),
+                CellPadding = 2,
+                HeaderSource = PdfHeaderSource.Rows,
+                HeaderRowCount = 1,
+                ShowHeader = true,
+                HeaderStyle = new PdfCellStyle()
+                {
+                    BackgroundBrush = new PdfSolidBrush(System.Drawing.Color.Black),
+                    TextBrush = brushLightGray,
+                    StringFormat = formatMiddle
+                }
+            };
+            productsTable.Style = style;
+
+            productsTable.DataSource = dataSource;
+            productsTable.Columns[0].Width = 8;
+            productsTable.Columns[3].Width = 30;
+            foreach (PdfColumn column in productsTable.Columns)
+            {
+                column.StringFormat = formatLeft;
+            }
+
+            PdfLayoutResult result = productsTable.Draw(page, new PointF(leftMargin, y));
+            y = y + result.Bounds.Height + 5;
+
+            //Total in letter and number
+            page.Canvas.DrawLine(penLightBlack10p, leftMargin, y, pageWidth, y);
+            text = "Total con Letra";
+            size = font7Bold.MeasureString(text, formatLeft);
+            y -= 4;
+            DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
+            DrawToPage(page, Conv.Enletras(cfdi.Total.ToString()) + "M.N.", font7, brushBlack, formatLeft, leftMargin, y, out y, true);
+
+            DrawToPageWithHeader(page, "Subtotal:", String.Format("       {0:C2}", cfdi.SubTotal), font7Bold, font7, brushBlack, formatLeft, midPage + (midPage / 2), y, out y);
+            DrawToPageWithHeader(page, "Total:", String.Format("            {0:C2}", cfdi.Total), font7Bold, font7, brushBlack, formatLeft, midPage + (midPage / 2), y, out y);
+
+            //QR Code with basic data
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(String.Format("?re={0}&rr={1}&tt={2:N1}&id={3}", cfdi.Emisor.Rfc, cfdi.Receptor.Rfc, cfdi.Total, cfdi.TimbreFiscal.UUID), QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+
+            float qrPosition = y;
+
+            PdfImage image = PdfImage.FromImage(qrCodeImage);
+            page.Canvas.DrawImage(image, leftMargin, y, qrSize, qrSize);
+
+            //Payment info
+            y = qrPosition + sectionSpacing;
+            DrawToPageWithHeader(page, "Método de pago:  ", cfdi.MetodoDePago, font7Bold, font7, brushBlack, formatLeft, leftMargin + qrSize, y, out y);
+            DrawToPageWithHeader(page, "Cuenta:  ", cfdi.NumCtaPago??"", font7Bold, font7, brushBlack, formatLeft, leftMargin + qrSize, y, out y);
+            DrawToPageWithHeader(page, "Forma de pago:  ", cfdi.FormaDePago, font7Bold, font7, brushBlack, formatLeft, leftMargin + qrSize, y, out y);
+            DrawToPageWithHeader(page, "Condiciones de pago:  ", cfdi.CondicionesDePago??"", font7Bold, font7, brushBlack, formatLeft, leftMargin + qrSize, y, out y);
+
+            y = qrPosition + qrSize + sectionSpacing;
+            page.Canvas.DrawLine(penLightBlack10p, leftMargin, y, pageWidth, y);
+            text = "Cadena original del complemento de certificación del SAT";
+            size = font7Bold.MeasureString(text, formatLeft);
+            y -= 4;
+            DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
+            area = new RectangleF(leftMargin, y, pageWidth - 5, 50);
+            DrawToPage(page, String.Format("||{0}|{1}|{2}|{3}|{4}", cfdi.TimbreFiscal.Version, cfdi.TimbreFiscal.UUID, cfdi.TimbreFiscal.FechaTimbrado, cfdi.Sello, cfdi.TimbreFiscal.NoCertificadoSAT), font7Bold, brushBlack, formatLeft, area, y, out y, false);
+            
+            y += sectionSpacing;
+            page.Canvas.DrawLine(penLightBlack10p, leftMargin, y, pageWidth, y);
+            text = "Sello digital del SAT";
+            size = font7Bold.MeasureString(text, formatLeft);
+            y -= 4;
+            DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
+            area = new RectangleF(leftMargin, y, pageWidth - 5, 50);
+            DrawToPage(page, cfdi.TimbreFiscal.SelloSAT, font7Bold, brushBlack, formatLeft, area, y, out y, false);
+
+            y += sectionSpacing;
+            page.Canvas.DrawLine(penLightBlack10p, leftMargin, y, pageWidth, y);
+            text = "Sello digital del contribuyente que lo expide";
+            size = font7Bold.MeasureString(text, formatLeft);
+            y -= 4;
+            DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
+            area = new RectangleF(leftMargin, y, pageWidth - 5, 50);
+            DrawToPage(page, cfdi.Sello, font7Bold, brushBlack, formatLeft, area, y, out y, false);
+
+            //Footer
+            DrawToPage(page, "Este documento es una representación impresa de un CFDI", font7, brushBlack, formatLeft, midPage, page.Canvas.ClientSize.Height - 30, out y, false);
         }
 
-        private static void DrawToPage(PdfPageBase page, string text, PdfTrueTypeFont font, PdfBrush brushColor, float leftMargin, float y, out float yout, PdfStringFormat formatLeft)
+        private static void DrawToPage(PdfPageBase page, string text, PdfTrueTypeFont font, PdfBrush brushColor, PdfStringFormat formatLeft, float x, float y, out float yout)
         {
-            page.Canvas.DrawString(text, font, brushColor, leftMargin, y, formatLeft);
+            DrawToPage(page, text, font, brushColor, formatLeft, x, y, out yout, false);
+        }
+
+        private static void DrawToPage(PdfPageBase page, string text, PdfTrueTypeFont font, PdfBrush brushColor, PdfStringFormat formatLeft, float x, float y, out float yout, bool ignoreOut)
+        {
+            page.Canvas.DrawString(text, font, brushColor, x, y, formatLeft);
             SizeF size = font.MeasureString(text, formatLeft);
-            yout = y + size.Height + 2;
+            yout = (ignoreOut)? y : y + size.Height + 2;
         }
 
-        private static void DrawToPageWithHeader(PdfPageBase page, string header, string text, PdfTrueTypeFont fontHeader, PdfTrueTypeFont font, PdfBrush brushColor, PdfStringFormat formatLeft, float leftMargin, float y, out float yout, bool ignoreOut)
+        private static void DrawToPage(PdfPageBase page, string text, PdfTrueTypeFont font, PdfBrush brushColor, PdfStringFormat formatLeft, RectangleF area, float y, out float yout, bool ignoreOut)
         {
-            page.Canvas.DrawString(header, fontHeader, brushColor, leftMargin, y, formatLeft);
+            page.Canvas.DrawString(text, font, brushColor, area, formatLeft);
+            SizeF size = font.MeasureString(text, area.Size, formatLeft);
+            yout = (ignoreOut) ? y : y + size.Height + 2;
+        }
+
+        private static void DrawToPageWithHeader(PdfPageBase page, string header, string text, PdfTrueTypeFont fontHeader, PdfTrueTypeFont font, PdfBrush brushColor, PdfStringFormat formatLeft, float x, float y, out float yout, bool ignoreOut)
+        {
+            page.Canvas.DrawString(header, fontHeader, brushColor, x, y, formatLeft);
             SizeF size = font.MeasureString(header, formatLeft);
-            page.Canvas.DrawString(text, font, brushColor, leftMargin + size.Width + 1, y, formatLeft);
+            page.Canvas.DrawString(text, font, brushColor, x + size.Width + 1, y, formatLeft);
             yout = (ignoreOut)?y : y + size.Height + 2;
         }
 
@@ -317,20 +434,20 @@ namespace CFDIXMLtoPDFwpf
         private void ImgRemove_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
             HashSet<string> toRemove = new HashSet<string>();
-            foreach (string item in lbx_files.SelectedItems)
+            foreach (string item in lbxXMLFiles.SelectedItems)
             {
                 toRemove.Add(item);
             }
             foreach (string item in toRemove)
             {
-                lbx_files.Items.Remove(item);
+                lbxXMLFiles.Items.Remove(item);
             }
             EnableConvert();
         }
 
         private void ImgClean_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
-            lbx_files.Items.Clear();
+            lbxXMLFiles.Items.Clear();
             EnableConvert();
         }
 
@@ -352,7 +469,7 @@ namespace CFDIXMLtoPDFwpf
 
             foreach (string filename in dlg.FileNames)
             {
-                lbx_files.Items.Add(filename);
+                lbxXMLFiles.Items.Add(filename);
             }
             EnableConvert();
 
@@ -368,6 +485,15 @@ namespace CFDIXMLtoPDFwpf
 
             EnableConvert();
 
+        }
+
+        private void LbxPDFFiles_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Controls.ListBox list = (System.Windows.Controls.ListBox)sender;
+            if(list.SelectedIndex > -1)
+            { 
+                System.Diagnostics.Process.Start(list.SelectedItem.ToString());
+            }
         }
     }
 }

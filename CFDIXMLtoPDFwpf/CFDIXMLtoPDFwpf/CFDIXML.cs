@@ -75,7 +75,7 @@ namespace CFDIXMLtoPDFwpf
 
     class Concepto
     {
-        private int cantidad;
+        private float cantidad;
         private string unidad;
         private string noIdentificacion;
         private string descripcion;
@@ -84,7 +84,7 @@ namespace CFDIXMLtoPDFwpf
 
         public Concepto(XmlNode xnConcepto)
         {
-            int.TryParse(xnConcepto.Attributes.GetNamedItem("cantidad").Value, out cantidad);
+            float.TryParse(xnConcepto.Attributes.GetNamedItem("cantidad").Value, out cantidad);
             Unidad = xnConcepto.Attributes.GetNamedItem("unidad").Value;
             NoIdentificacion = xnConcepto.Attributes.GetNamedItem("noIdentificacion").Value;
             Descripcion = xnConcepto.Attributes.GetNamedItem("descripcion").Value;
@@ -92,7 +92,7 @@ namespace CFDIXMLtoPDFwpf
             float.TryParse(xnConcepto.Attributes.GetNamedItem("importe").Value, out importe);
         }
 
-        public int Cantidad { get => cantidad; set => cantidad = value; }
+        public float Cantidad { get => cantidad; set => cantidad = value; }
         public string Unidad { get => unidad; set => unidad = value; }
         public string NoIdentificacion { get => noIdentificacion; set => noIdentificacion = value; }
         public string Descripcion { get => descripcion; set => descripcion = value; }
@@ -142,12 +142,12 @@ namespace CFDIXMLtoPDFwpf
 
     class TimbreFiscalDigital
     {
-        private string selloCFD;
+        private String selloCFD;
         private string fechaTimbrado;
         private string uuid;
         private string noCertificadoSAT;
         private string version;
-        private string selloSAT;
+        private String selloSAT;
 
         public TimbreFiscalDigital(XmlNode xnTimbreFiscalDigital, XmlNamespaceManager nameSpaceManager)
         {
@@ -160,12 +160,12 @@ namespace CFDIXMLtoPDFwpf
             SelloSAT = xnTimbreFiscalDigital.Attributes.GetNamedItem("selloSAT").Value;
         }
 
-        public string SelloCFD { get => selloCFD; set => selloCFD = value; }
+        public String SelloCFD { get => selloCFD; set => selloCFD = value; }
         public string FechaTimbrado { get => fechaTimbrado; set => fechaTimbrado = value; }
         public string UUID { get => uuid; set => uuid = value; }
         public string NoCertificadoSAT { get => noCertificadoSAT; set => noCertificadoSAT = value; }
         public string Version { get => version; set => version = value; }
-        public string SelloSAT { get => selloSAT; set => selloSAT = value; }
+        public String SelloSAT { get => selloSAT; set => selloSAT = value; }
     }
 
     public class CFDIXML
@@ -179,7 +179,7 @@ namespace CFDIXMLtoPDFwpf
         private string serie;
         private string folio;
         private string fecha;
-        private string sello;
+        private String sello;
         private string formaDePago;
         private string noCertificado;
         private string certificado;
@@ -202,7 +202,7 @@ namespace CFDIXMLtoPDFwpf
         public string Serie { get => serie; set => serie = value; }
         public string Folio { get => folio; set => folio = value; }
         public string Fecha { get => fecha; set => fecha = value; }
-        public string Sello { get => sello; set => sello = value; }
+        public String Sello { get => sello; set => sello = value; }
         public string FormaDePago { get => formaDePago; set => formaDePago = value; }
         public string NoCertificado { get => noCertificado; set => noCertificado = value; }
         public string Certificado { get => certificado; set => certificado = value; }
