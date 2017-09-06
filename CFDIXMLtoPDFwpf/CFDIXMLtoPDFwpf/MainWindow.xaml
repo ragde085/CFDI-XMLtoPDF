@@ -124,7 +124,7 @@
             </ListBox.Effect>
         </ListBox>
         <Label Content="PDF Files" Grid.Column="1" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnConvert" Margin="387,188,379,0" VerticalAlignment="Top" Height="61" Click="BtnConvert_Click" Opacity="0.2" Grid.ColumnSpan="2">
+        <Button x:Name="btnConvert" Margin="387,188,379,0" VerticalAlignment="Top" Height="61" Click="BtnConvert_Click" Opacity="0.2" Grid.ColumnSpan="2" IsEnabled="False">
             <StackPanel>
                 <Image Height="32" Width="32" Source="resources/wizard.png" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <TextBlock Text="Convert"/>

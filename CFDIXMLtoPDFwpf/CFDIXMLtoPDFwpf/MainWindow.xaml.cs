@@ -119,12 +119,14 @@ namespace CFDIXMLtoPDFwpf
             {
                 DoubleAnimation animation = new DoubleAnimation(1, TimeSpan.FromSeconds(1));
                 btnConvert.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
+                btnConvert.IsEnabled = true;
             }
             else if (txt_target.Text.Length == 0 || lbxXMLFiles?.Items.Count == 0)
             {
                 DoubleAnimation animation = new DoubleAnimation(0.2, TimeSpan.FromSeconds(1));
                 btnConvert.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
                 lbxPDFFiles.BeginAnimation(System.Windows.Controls.Button.OpacityProperty, animation);
+                btnConvert.IsEnabled = false;
                 pgb_Progress.Visibility = Visibility.Hidden;
             }
         }
