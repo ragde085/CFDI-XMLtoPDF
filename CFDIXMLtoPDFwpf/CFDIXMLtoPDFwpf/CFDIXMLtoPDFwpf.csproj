@@ -27,7 +27,7 @@
     <TargetCulture>en</TargetCulture>
     <ProductName>CFDI XMLtoPDF</ProductName>
     <PublisherName>SilverWolf Development</PublisherName>
-    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>

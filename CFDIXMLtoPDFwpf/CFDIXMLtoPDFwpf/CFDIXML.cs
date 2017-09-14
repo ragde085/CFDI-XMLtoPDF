@@ -22,10 +22,10 @@ namespace CFDIXMLtoPDFwpf
         public Domicilio(XmlNode xnDomicilio)
         {
             Calle = xnDomicilio.Attributes.GetNamedItem("calle").Value;
-            NoExterior = xnDomicilio.Attributes.GetNamedItem("noExterior").Value;
+            NoExterior = xnDomicilio.Attributes.GetNamedItem("noExterior")?.Value;
             NoInterior = xnDomicilio.Attributes.GetNamedItem("noInterior")?.Value;
             Colonia = xnDomicilio.Attributes.GetNamedItem("colonia").Value;
-            Localidad = xnDomicilio.Attributes.GetNamedItem("localidad").Value;
+            Localidad = xnDomicilio.Attributes.GetNamedItem("localidad")?.Value;
             Municipio = xnDomicilio.Attributes.GetNamedItem("municipio").Value;
             Estado = xnDomicilio.Attributes.GetNamedItem("estado").Value;
             Pais = xnDomicilio.Attributes.GetNamedItem("pais").Value;
@@ -86,7 +86,7 @@ namespace CFDIXMLtoPDFwpf
         {
             float.TryParse(xnConcepto.Attributes.GetNamedItem("cantidad").Value, out cantidad);
             Unidad = xnConcepto.Attributes.GetNamedItem("unidad").Value;
-            NoIdentificacion = xnConcepto.Attributes.GetNamedItem("noIdentificacion").Value;
+            NoIdentificacion = xnConcepto.Attributes.GetNamedItem("noIdentificacion")?.Value;
             Descripcion = xnConcepto.Attributes.GetNamedItem("descripcion").Value;
             float.TryParse(xnConcepto.Attributes.GetNamedItem("valorUnitario").Value, out valorUnitario);
             float.TryParse(xnConcepto.Attributes.GetNamedItem("importe").Value, out importe);
@@ -160,7 +160,7 @@ namespace CFDIXMLtoPDFwpf
             SelloSAT = xnTimbreFiscalDigital.Attributes.GetNamedItem("selloSAT").Value;
         }
 
-        public String SelloCFD { get => selloCFD; set => selloCFD = value; }
+        public String SelloCFD { get => selloCFD; set => selloCFD = value.TrimEnd(); }
         public string FechaTimbrado { get => fechaTimbrado; set => fechaTimbrado = value; }
         public string UUID { get => uuid; set => uuid = value; }
         public string NoCertificadoSAT { get => noCertificadoSAT; set => noCertificadoSAT = value; }
@@ -247,8 +247,8 @@ namespace CFDIXMLtoPDFwpf
             Certificado = xnComprobante.Attributes.GetNamedItem("certificado").Value;
             CondicionesDePago = xnComprobante.Attributes.GetNamedItem("condicionesDePago")?.Value;
             float.TryParse(xnComprobante.Attributes.GetNamedItem("subTotal").Value, out subTotal);
-            float.TryParse(xnComprobante.Attributes.GetNamedItem("TipoCambio").Value, out tipoCambio);
-            Moneda = xnComprobante.Attributes.GetNamedItem("Moneda").Value;
+            float.TryParse(xnComprobante.Attributes.GetNamedItem("TipoCambio")?.Value, out tipoCambio);
+            Moneda = xnComprobante.Attributes.GetNamedItem("Moneda")?.Value;
             float.TryParse(xnComprobante.Attributes.GetNamedItem("total").Value, out total);
             TipoDeComprobante = xnComprobante.Attributes.GetNamedItem("tipoDeComprobante").Value;
             MetodoDePago = xnComprobante.Attributes.GetNamedItem("metodoDePago").Value;

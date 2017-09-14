@@ -199,7 +199,7 @@ namespace CFDIXMLtoPDFwpf
                     }
                 }catch (Exception ex)
                 {
-                    results.Add("Unable to parse file " + file.File + ". Reason: " + ex.Message);
+                    results.Add("Unable to parse file " + file.File + ". Reason: " + ex.Message + " "+ ex.StackTrace);
                 }
             }
             e.Result = results;

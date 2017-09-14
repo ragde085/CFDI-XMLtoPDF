@@ -257,7 +257,7 @@ namespace CFDIXMLtoPDFwpf
             size = font7Bold.MeasureString(text, formatLeft);
             y -= 4;
             DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
-            area = new RectangleF(leftMargin, y, pageWidth - 5, 50);
+            area = new RectangleF(leftMargin, y, pageWidth - 5, 100);
             DrawToPage(page, String.Format("||{0}|{1}|{2}|{3}|{4}", cfdi.TimbreFiscal.Version, cfdi.TimbreFiscal.UUID, cfdi.TimbreFiscal.FechaTimbrado, cfdi.Sello, cfdi.TimbreFiscal.NoCertificadoSAT), font7Bold, brushBlack, formatLeft, area, y, out y, false);
 
             y += sectionSpacing;
@@ -266,7 +266,7 @@ namespace CFDIXMLtoPDFwpf
             size = font7Bold.MeasureString(text, formatLeft);
             y -= 4;
             DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
-            area = new RectangleF(leftMargin, y, pageWidth - 5, 50);
+            area = new RectangleF(leftMargin, y, pageWidth - 5, 100);
             DrawToPage(page, cfdi.TimbreFiscal.SelloSAT, font7Bold, brushBlack, formatLeft, area, y, out y, false);
 
             y += sectionSpacing;
@@ -275,7 +275,7 @@ namespace CFDIXMLtoPDFwpf
             size = font7Bold.MeasureString(text, formatLeft);
             y -= 4;
             DrawToPage(page, text, font7Bold, brushLightGray, formatLeft, leftMargin, y, out y);
-            area = new RectangleF(leftMargin, y, pageWidth - 5, 50);
+            area = new RectangleF(leftMargin, y, pageWidth - 5, 100);
             DrawToPage(page, cfdi.Sello, font7Bold, brushBlack, formatLeft, area, y, out y, false);
 
             //Footer
