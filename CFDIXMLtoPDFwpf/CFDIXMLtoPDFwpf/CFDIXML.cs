@@ -234,6 +234,10 @@ namespace CFDIXMLtoPDFwpf
             XmlNode xnComprobante = xmlDoc.SelectSingleNode("//cfdi:Comprobante", nameSpaceManager);
             if(xnComprobante == null) { return null; }
             Version = xnComprobante.Attributes.GetNamedItem("version").Value;
+            if(Version != "3.2")
+            {
+                throw new Exception("Uncompatible version " + Version);
+            }
             Serie = xnComprobante.Attributes.GetNamedItem("serie")?.Value;
             Folio = xnComprobante.Attributes.GetNamedItem("folio").Value;
             Fecha = xnComprobante.Attributes.GetNamedItem("fecha").Value;

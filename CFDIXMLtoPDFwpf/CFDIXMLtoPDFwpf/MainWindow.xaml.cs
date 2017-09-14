@@ -161,7 +161,14 @@ namespace CFDIXMLtoPDFwpf
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             foreach (string output in (List<string>)e.Result) {
-                lbxPDFFiles.Items.Add(new PDFItem(GetFileName(output), output));
+                if (output.Contains("Reason:"))
+                {
+                    lbxPDFFiles.Items.Add(new PDFItem(output.Substring(0, output.IndexOf("Reason:")), output.Substring(output.IndexOf("Reason:"))));
+                }
+                else
+                {
+                    lbxPDFFiles.Items.Add(new PDFItem(GetFileName(output), output));
+                }
             }
 
             pgb_Progress.Value = 100;
@@ -181,13 +188,18 @@ namespace CFDIXMLtoPDFwpf
             foreach (var obj in files)
             {
                 var file = (PDFItem)obj;
-                Thread.Sleep(10);
-                CFDI_PDFGenerator pdfGenerator = new CFDI_PDFGenerator(new CFDIXML(file.FilePath).LoadFile(), file.File, outputFolder);
-                string pdfFile = pdfGenerator.GeneratePDF();
-                if (pdfFile != null)
+                try
                 {
-                    (sender as BackgroundWorker).ReportProgress(100/files.Count);
-                    results.Add(pdfFile);
+                    CFDI_PDFGenerator pdfGenerator = new CFDI_PDFGenerator(new CFDIXML(file.FilePath).LoadFile(), file.File, outputFolder);
+                    string pdfFile = pdfGenerator.GeneratePDF();
+                    if (pdfFile != null)
+                    {
+                        (sender as BackgroundWorker).ReportProgress(100 / files.Count);
+                        results.Add(pdfFile);
+                    }
+                }catch (Exception ex)
+                {
+                    results.Add("Unable to parse file " + file.File + ". Reason: " + ex.Message);
                 }
             }
             e.Result = results;
@@ -203,12 +215,12 @@ namespace CFDIXMLtoPDFwpf
 
         private void ImgRemove_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
-            HashSet<string> toRemove = new HashSet<string>();
-            foreach (string item in lbxXMLFiles.SelectedItems)
+            HashSet<PDFItem> toRemove = new HashSet<PDFItem>();
+            foreach (PDFItem item in lbxXMLFiles.SelectedItems)
             {
                 toRemove.Add(item);
             }
-            foreach (string item in toRemove)
+            foreach (PDFItem item in toRemove)
             {
                 lbxXMLFiles.Items.Remove(item);
             }
